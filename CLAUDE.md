@@ -9,16 +9,17 @@
 **Description:** A Flutter plugin for integrating Star Micronics printers with Flutter applications. Provides comprehensive printing functionality including receipt printing, barcode/QR code generation, and cash drawer control.
 
 ### Supported Platforms
-- **Android** (min SDK 24, compile SDK 36) - ✅ Full implementation
-- **iOS** - ⚠️ Stub implementation only (getPlatformVersion)
-- **Windows** - ⚠️ C API plugin structure exists but not implemented
+- **Android** (min SDK 24, compile SDK 36) - ✅ Full implementation with StarIO10 SDK 1.6.1
+- **iOS** (min iOS 13.0) - ✅ Full implementation with StarIO10 SDK 1.6.1
+- **Windows** - ⚠️ Stub with clear error messages (not implemented)
 
 ### Key Technologies
 - **Flutter SDK:** >=3.3.0
 - **Dart SDK:** ^3.9.0
 - **Kotlin:** 2.1.0 (Android)
+- **Swift:** 5.0+ (iOS)
 - **Android Gradle:** 8.9.1
-- **Star Micronics StarIO10 SDK** (Android native dependency)
+- **Star Micronics StarIO10 SDK:** 1.6.1 (Android & iOS)
 
 ---
 
@@ -46,9 +47,10 @@ star_micronics_printer/
 │   └── src/main/kotlin/com/phonetechbd/star_micronics_printer/
 │       └── StarMicronicsPrinterPlugin.kt  # Main plugin (335 lines)
 │
-├── ios/                              # iOS stub implementation
+├── ios/                              # iOS full implementation
+│   ├── star_micronics_printer.podspec        # Pod specification
 │   └── Classes/
-│       └── StarMicronicsPrinterPlugin.swift  # Needs implementation
+│       └── StarMicronicsPrinterPlugin.swift  # Full implementation (510 lines)
 │
 ├── windows/                          # Windows C++ stub
 │   ├── star_micronics_printer_plugin.cpp
@@ -368,7 +370,7 @@ cmd.containsKey("customCommand") -> {
 - ✅ Printer discovery (LAN, Bluetooth, USB)
 - ✅ Status monitoring
 - ✅ Text printing with styles
-- ✅ Barcode printing
+- ✅ Barcode printing (Code128, Code39, Code93, JAN8, JAN13)
 - ✅ QR code printing
 - ✅ Image printing (from byte array)
 - ✅ Paper control (cut, feed)
@@ -387,29 +389,54 @@ cmd.containsKey("customCommand") -> {
 
 **Dependencies:**
 ```gradle
-// Note: StarIO10 SDK dependency not explicitly shown in build.gradle
-// May need to be added manually or via AAR/Maven
+dependencies {
+    implementation("com.starmicronics:stario10:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+}
 ```
 
-### iOS Implementation Status: ⚠️ Stub Only
+### iOS Implementation Status: ✅ Complete
 
-**Current State:**
-- Only `getPlatformVersion` implemented
-- Requires full implementation using StarIO10 SDK for iOS
-- Structure in place: `ios/Classes/StarMicronicsPrinterPlugin.swift`
+**Implemented Features:**
+- ✅ Printer discovery (LAN, Bluetooth, USB)
+- ✅ Status monitoring
+- ✅ Text printing with all styles (bold, underline, invert, magnification)
+- ✅ Barcode printing (Code128, Code39, Code93, ITF, JAN8, JAN13, NW7, UPC-A, UPC-E)
+- ✅ QR code printing with error correction levels
+- ✅ PDF417 barcode printing
+- ✅ Image printing (from byte array)
+- ✅ Paper control (cut with multiple types, feed)
+- ✅ Cash drawer control
+- ✅ Alignment (left, center, right)
+- ✅ Character encoding support
+- ✅ Font style selection
+- ✅ Character and line spacing
+- ✅ Position commands (absolute/relative)
+- ✅ Logo printing
 
-**TODO for iOS:**
-1. Add StarIO10 SDK via CocoaPods
-2. Implement method channel handlers
-3. Map command structures to iOS SDK
-4. Test on physical iOS devices with Star printers
+**Implementation Details:**
+- Uses Swift with async/await (Task API)
+- Full command mapping from Dart to StarIO10 iOS SDK
+- Comprehensive error handling with descriptive messages
+- ~510 lines of Swift code
 
-### Windows Implementation Status: ⚠️ C API Stub
+**Dependencies:**
+```ruby
+# In star_micronics_printer.podspec
+s.dependency 'StarIO10', '~> 1.6.1'
+```
+
+### Windows Implementation Status: ⚠️ Stub Only
 
 **Current State:**
 - C++ plugin structure exists
-- No actual printer functionality
-- Would require Windows-compatible Star SDK
+- Returns clear error messages for printer methods
+- Error code: `PLATFORM_NOT_SUPPORTED`
+- No actual printer functionality (Star Micronics doesn't provide C++ SDK)
+
+**Implemented Methods:**
+- `getPlatformVersion` - Returns Windows version
+- All printer methods return helpful error messages directing users to iOS/Android
 
 ---
 
@@ -445,18 +472,7 @@ cmd.containsKey("customCommand") -> {
 
 ## Common Tasks for AI Assistants
 
-### 1. Adding iOS Support
-
-**Current Priority:** HIGH (iOS is not implemented)
-
-Steps:
-1. Add StarIO10 SDK to `ios/star_micronics_printer.podspec`
-2. Implement method handlers in `ios/Classes/StarMicronicsPrinterPlugin.swift`
-3. Mirror Android implementation structure
-4. Handle iOS-specific async patterns (callbacks or async/await)
-5. Test on physical devices
-
-### 2. Completing Android Command Mapping
+### 1. Completing Android Command Mapping
 
 **Location:** `android/src/main/kotlin/.../StarMicronicsPrinterPlugin.kt:168`
 
@@ -473,13 +489,13 @@ The `processCommands()` function needs additional case handlers for:
 
 Refer to StarIO10 SDK documentation for corresponding Android API calls.
 
-### 3. Adding New Printer Models
+### 2. Adding New Printer Models
 
 **Location:** `lib/src/models/star_printer_model.dart`
 
 Add new models to the enum and `fromString()` method.
 
-### 4. Improving Error Handling
+### 3. Improving Error Handling
 
 Current implementation swallows errors and returns `false` or `null`.
 Consider adding detailed error objects:
@@ -492,14 +508,14 @@ class PrinterError {
 }
 ```
 
-### 5. Adding Print Job Queue
+### 4. Adding Print Job Queue
 
 For high-volume printing, consider implementing a queue system:
 - Queue print jobs in memory
 - Process sequentially to avoid connection conflicts
 - Provide job status callbacks
 
-### 6. Widget to Image Conversion
+### 5. Widget to Image Conversion
 
 The `createImageFromWidget()` helper in `print_commands.dart:482` is powerful but complex.
 When modifying:
@@ -605,12 +621,20 @@ dev_dependencies:
 ```
 
 ### Android Dependencies
-- StarIO10 SDK (not explicitly in build.gradle - may require manual integration)
-- Kotlin Coroutines (implied, may need explicit declaration)
+```gradle
+dependencies {
+    implementation("com.starmicronics:stario10:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+}
+```
 
-### iOS Dependencies (when implemented)
-- StarIO10 SDK via CocoaPods
-- Swift 5.0+
+### iOS Dependencies
+```ruby
+# In star_micronics_printer.podspec
+s.dependency 'StarIO10', '~> 1.6.1'
+```
+- Minimum iOS: 13.0
+- Swift: 5.0+
 
 ---
 
@@ -637,24 +661,23 @@ dev_dependencies:
 ## Future Enhancements
 
 ### High Priority
-1. ✅ **Complete iOS implementation**
-2. ✅ **Complete Android command mapping**
-3. Add error callback system
-4. Add print job queue
-5. Improve documentation with more examples
+1. ✅ **Complete Android command mapping** (partially done)
+2. Add error callback system
+3. Add print job queue
+4. Improve documentation with more examples
 
 ### Medium Priority
-6. Add printer configuration management
-7. Support for saved printer profiles
-8. Receipt template system
-9. Add more barcode symbologies
-10. Improve status polling/monitoring
+5. Add printer configuration management
+6. Support for saved printer profiles
+7. Receipt template system
+8. Add more barcode symbologies
+9. Improve status polling/monitoring
 
 ### Low Priority
-11. Windows implementation
-12. Linux support
-13. Web support (if feasible)
-14. Printer firmware update support
+10. Windows implementation (requires Star SDK for Windows)
+11. Linux support
+12. Web support (if feasible)
+13. Printer firmware update support
 
 ---
 
@@ -688,8 +711,9 @@ For issues and feature requests, refer to the project repository.
 
 **When asked to:**
 
-- **Add a print feature** → Modify `PrintCommands` + update `processCommands()` in Android plugin
-- **Fix iOS** → Implement handlers in `StarMicronicsPrinterPlugin.swift` using StarIO10 iOS SDK
+- **Add a print feature** → Modify `PrintCommands` + update `processCommands()` in both Android and iOS plugins
+- **Add Android command** → Update `processCommands()` in `StarMicronicsPrinterPlugin.kt`
+- **Add iOS command** → Update `processCommands()` in `StarMicronicsPrinterPlugin.swift`
 - **Debug printing issues** → Check printer connection, status, and command structure
 - **Add printer model** → Update `star_printer_model.dart` enum
 - **Improve examples** → Modify `example/lib/main.dart`
@@ -699,11 +723,17 @@ For issues and feature requests, refer to the project repository.
 **Key Files:**
 - API: `lib/src/star_micronics_printer.dart`
 - Commands: `lib/src/print_commands.dart`
-- Android: `android/src/main/kotlin/.../StarMicronicsPrinterPlugin.kt`
-- iOS: `ios/Classes/StarMicronicsPrinterPlugin.swift`
-- Example: `example/lib/main.dart`
+- Android: `android/src/main/kotlin/.../StarMicronicsPrinterPlugin.kt` (335 lines)
+- iOS: `ios/Classes/StarMicronicsPrinterPlugin.swift` (510 lines)
+- Example: `example/lib/main.dart` (353 lines)
+
+**Platform Coverage:**
+- ✅ Android: Full implementation with StarIO10 SDK 1.6.1
+- ✅ iOS: Full implementation with StarIO10 SDK 1.6.1
+- ⚠️ Windows: Stub with error messages (not implemented)
 
 ---
 
 *Last Updated: 2025-11-15*
 *This document should be updated whenever significant architectural changes are made.*
+*iOS implementation completed: 2025-11-15*

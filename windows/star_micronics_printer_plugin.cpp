@@ -40,7 +40,9 @@ StarMicronicsPrinterPlugin::~StarMicronicsPrinterPlugin() {}
 void StarMicronicsPrinterPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  if (method_call.method_name().compare("getPlatformVersion") == 0) {
+  const std::string& method = method_call.method_name();
+
+  if (method == "getPlatformVersion") {
     std::ostringstream version_stream;
     version_stream << "Windows ";
     if (IsWindows10OrGreater()) {
@@ -51,7 +53,38 @@ void StarMicronicsPrinterPlugin::HandleMethodCall(
       version_stream << "7";
     }
     result->Success(flutter::EncodableValue(version_stream.str()));
-  } else {
+  }
+  else if (method == "searchPrinters") {
+    result->Error("PLATFORM_NOT_SUPPORTED",
+                  "Star Micronics printer plugin is not yet implemented for Windows. "
+                  "Please use Android or iOS platforms.",
+                  flutter::EncodableValue());
+  }
+  else if (method == "getStatus") {
+    result->Error("PLATFORM_NOT_SUPPORTED",
+                  "Star Micronics printer plugin is not yet implemented for Windows. "
+                  "Please use Android or iOS platforms.",
+                  flutter::EncodableValue());
+  }
+  else if (method == "print") {
+    result->Error("PLATFORM_NOT_SUPPORTED",
+                  "Star Micronics printer plugin is not yet implemented for Windows. "
+                  "Please use Android or iOS platforms.",
+                  flutter::EncodableValue());
+  }
+  else if (method == "printCommands") {
+    result->Error("PLATFORM_NOT_SUPPORTED",
+                  "Star Micronics printer plugin is not yet implemented for Windows. "
+                  "Please use Android or iOS platforms.",
+                  flutter::EncodableValue());
+  }
+  else if (method == "openCashDrawer") {
+    result->Error("PLATFORM_NOT_SUPPORTED",
+                  "Star Micronics printer plugin is not yet implemented for Windows. "
+                  "Please use Android or iOS platforms.",
+                  flutter::EncodableValue());
+  }
+  else {
     result->NotImplemented();
   }
 }
