@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory
 import androidx.annotation.NonNull
 import com.starmicronics.stario10.*
 import com.starmicronics.stario10.starxpandcommand.*
+import com.starmicronics.stario10.starxpandcommand.Printer
+import com.starmicronics.stario10.starxpandcommand.Drawer
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -82,8 +84,8 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                     printer.closeAsync().await()
 
                     val statusMap = mapOf(
-                        "online" to (status.coverOpenCloseSignal == false && status.paperEmpty == false),
-                        "coverOpen" to (status.coverOpenCloseSignal == true),
+                        "online" to (status.coverOpen == false && status.paperEmpty == false),
+                        "coverOpen" to (status.coverOpen == true),
                         "paperEmpty" to (status.paperEmpty == true),
                         "paperNearEmpty" to (status.paperNearEmpty == true),
                         "drawerOpen" to (status.drawerOpenCloseSignal == true)
