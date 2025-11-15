@@ -1,5 +1,20 @@
 # iOS Setup Quick Start
 
+## 🚨 ERROR: "No such module 'StarIO10'" After Adding SPM Package?
+
+**This is the most common issue!** If you've already added StarIO10 via SPM but still see module errors:
+
+```bash
+cd ios
+./fix_spm_module.sh
+```
+
+Or see: [`FIX_MODULE_ERROR.md`](./FIX_MODULE_ERROR.md) for detailed instructions.
+
+**Root cause:** The SPM package needs to be linked to BOTH the Runner target AND the plugin target.
+
+---
+
 ## TL;DR - Do This First!
 
 If you're seeing this error:
