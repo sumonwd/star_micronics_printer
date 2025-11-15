@@ -5,8 +5,8 @@ import android.graphics.BitmapFactory
 import androidx.annotation.NonNull
 import com.starmicronics.stario10.*
 import com.starmicronics.stario10.starxpandcommand.*
-import com.starmicronics.stario10.starxpandcommand.Printer
-import com.starmicronics.stario10.starxpandcommand.Drawer
+import com.starmicronics.stario10.starxpandcommand.printer.*
+import com.starmicronics.stario10.starxpandcommand.drawer.*
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -116,7 +116,7 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                         DocumentBuilder().addPrinter(
                             PrinterBuilder()
                                 .actionPrintText(commandString)
-                                .actionCut(Printer.CutType.Partial)
+                                .actionCut(CutType.Partial)
                         )
                     )
 
@@ -191,9 +191,9 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                 // Alignment
                 cmd.containsKey("setAlignment") -> {
                     val alignment = when(cmd["setAlignment"] as String) {
-                        "center" -> Printer.Alignment.Center
-                        "right" -> Printer.Alignment.Right
-                        else -> Printer.Alignment.Left
+                        "center" -> Alignment.Center
+                        "right" -> Alignment.Right
+                        else -> Alignment.Left
                     }
                     builder.styleAlignment(alignment)
                 }
@@ -211,9 +211,9 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                 // Paper control
                 cmd.containsKey("appendCutPaper") -> {
                     val cutType = when(cmd["appendCutPaper"] as String) {
-                        "fullCut" -> Printer.CutType.Full
-                        "partialCutWithFeed" -> Printer.CutType.PartialWithFeed
-                        else -> Printer.CutType.Partial
+                        "fullCut" -> CutType.Full
+                        "partialCutWithFeed" -> CutType.PartialWithFeed
+                        else -> CutType.Partial
                     }
                     builder.actionCut(cutType)
                 }
@@ -227,11 +227,11 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                     val symbology = parseBarcodeSymbology(cmd["symbology"] as? String)
                     val height = ((cmd["height"] as? Int) ?: 40).toDouble()
                     val hri = cmd["hri"] as? Boolean ?: false
-                    
-                    val parameter = Printer.BarcodeParameter(data, symbology)
+
+                    val parameter = BarcodeParameter(data, symbology)
                         .setHeight(height)
                         .setPrintHRI(hri)
-                    
+
                     builder.actionPrintBarcode(parameter)
                 }
                 
@@ -240,11 +240,11 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                     val data = cmd["appendQrCode"] as String
                     val level = parseQrCodeLevel(cmd["level"] as? String)
                     val cellSize = (cmd["cellSize"] as? Int) ?: 8
-                    
-                    val parameter = Printer.QRCodeParameter(data)
+
+                    val parameter = QRCodeParameter(data)
                         .setLevel(level)
                         .setCellSize(cellSize)
-                    
+
                     builder.actionPrintQRCode(parameter)
                 }
                 
@@ -252,11 +252,11 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                 cmd.containsKey("appendBitmapByteArray") -> {
                     val byteArray = cmd["appendBitmapByteArray"] as ByteArray
                     val width = (cmd["width"] as? Int) ?: 576
-                    
+
                     try {
                         val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
                         if (bitmap != null) {
-                            builder.actionPrintImage(Printer.ImageParameter(bitmap, width))
+                            builder.actionPrintImage(ImageParameter(bitmap, width))
                         }
                     } catch (e: Exception) {
                         // Handle error
@@ -266,22 +266,22 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    private fun parseBarcodeSymbology(symbology: String?): Printer.BarcodeSymbology {
+    private fun parseBarcodeSymbology(symbology: String?): BarcodeSymbology {
         return when(symbology?.lowercase()) {
-            "code39" -> Printer.BarcodeSymbology.Code39
-            "code93" -> Printer.BarcodeSymbology.Code93
-            "jan8" -> Printer.BarcodeSymbology.Jan8
-            "jan13" -> Printer.BarcodeSymbology.Jan13
-            else -> Printer.BarcodeSymbology.Code128
+            "code39" -> BarcodeSymbology.Code39
+            "code93" -> BarcodeSymbology.Code93
+            "jan8" -> BarcodeSymbology.Jan8
+            "jan13" -> BarcodeSymbology.Jan13
+            else -> BarcodeSymbology.Code128
         }
     }
 
-    private fun parseQrCodeLevel(level: String?): Printer.QRCodeLevel {
+    private fun parseQrCodeLevel(level: String?): QRCodeLevel {
         return when(level?.lowercase()) {
-            "h" -> Printer.QRCodeLevel.H
-            "m" -> Printer.QRCodeLevel.M
-            "q" -> Printer.QRCodeLevel.Q
-            else -> Printer.QRCodeLevel.L
+            "h" -> QRCodeLevel.H
+            "m" -> QRCodeLevel.M
+            "q" -> QRCodeLevel.Q
+            else -> QRCodeLevel.L
         }
     }
 
@@ -297,7 +297,7 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                     val job = StarXpandCommandBuilder()
                     job.addDocument(
                         DocumentBuilder().addDrawer(
-                            DrawerBuilder().actionOpen(Drawer.Channel.No1)
+                            DrawerBuilder().actionOpen(OpenParameter())
                         )
                     )
 
