@@ -52,7 +52,7 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                     override fun onPrinterFound(printer: StarPrinter) {
                         printers.add(
                             mapOf(
-                                "model" to (printer.information?.model ?: "Unknown"),
+                                "model" to (printer.information?.model?.name ?: "Unknown"),
                                 "identifier" to printer.connectionSettings.identifier,
                                 "interfaceType" to printer.connectionSettings.interfaceType.name.lowercase(),
                                 "emulation" to (printer.information?.emulation?.name ?: "")
