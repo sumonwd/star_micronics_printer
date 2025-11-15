@@ -1,0 +1,28 @@
+PODS:
+  - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - star_micronics_printer (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - star_micronics_printer (from `.symlinks/plugins/star_micronics_printer/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  star_micronics_printer:
+    :path: ".symlinks/plugins/star_micronics_printer/ios"
+
+SPEC CHECKSUMS:
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  star_micronics_printer: 2520be2f6877e7675300bea6ca6747d75fa89921
+
+PODFILE CHECKSUM: 244cd1428b061a691d6ca63190334feca6651e01
+
+COCOAPODS: 1.16.2
