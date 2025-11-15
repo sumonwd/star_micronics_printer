@@ -33,23 +33,38 @@ class _PrinterDemoState extends State<PrinterDemo> {
   PrinterInfo? _selectedPrinter;
   PrinterStatus? _printerStatus;
   bool _isSearching = false;
+  InterfaceType? _selectedInterfaceType; // null means search all
 
   Future<void> _searchPrinters() async {
     setState(() => _isSearching = true);
 
-    final printers = await StarMicronicsPrinter.searchPrinters(
-      timeout: const Duration(seconds: 10),
-    );
+    try {
+      final printers = await StarMicronicsPrinter.searchPrinters(
+        timeout: const Duration(seconds: 10),
+      );
 
-    setState(() {
-      _printers = printers;
-      _isSearching = false;
-    });
+      // Filter by selected interface type if specified
+      final filteredPrinters = _selectedInterfaceType == null
+          ? printers
+          : printers.where((p) => p.interfaceType == _selectedInterfaceType).toList();
 
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Found ${printers.length} printers')));
+      setState(() {
+        _printers = filteredPrinters;
+        _isSearching = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(
+          SnackBar(content: Text('Found ${filteredPrinters.length} printers')),
+        );
+      }
+    } catch (e) {
+      setState(() => _isSearching = false);
+      if (mounted) {
+        _showError('Search failed: $e');
+      }
     }
   }
 
@@ -263,6 +278,69 @@ class _PrinterDemoState extends State<PrinterDemo> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const Text(
+              'Interface Type:',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: [
+                ChoiceChip(
+                  label: const Text('All'),
+                  selected: _selectedInterfaceType == null,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() {
+                        _selectedInterfaceType = null;
+                        _printers.clear();
+                        _selectedPrinter = null;
+                      });
+                    }
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('LAN'),
+                  selected: _selectedInterfaceType == InterfaceType.lan,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() {
+                        _selectedInterfaceType = InterfaceType.lan;
+                        _printers.clear();
+                        _selectedPrinter = null;
+                      });
+                    }
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('Bluetooth'),
+                  selected: _selectedInterfaceType == InterfaceType.bluetooth,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() {
+                        _selectedInterfaceType = InterfaceType.bluetooth;
+                        _printers.clear();
+                        _selectedPrinter = null;
+                      });
+                    }
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('USB'),
+                  selected: _selectedInterfaceType == InterfaceType.usb,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() {
+                        _selectedInterfaceType = InterfaceType.usb;
+                        _printers.clear();
+                        _selectedPrinter = null;
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _isSearching ? null : _searchPrinters,
               icon: _isSearching
