@@ -12,29 +12,70 @@ This document provides setup instructions for using the Star Micronics Printer F
 
 The StarIO10 SDK (StarXpand SDK) is required for iOS support but **does not support CocoaPods**. You must add it manually via Swift Package Manager.
 
+### ⚠️ Important: Installation Order
+
+Due to the way CocoaPods and Swift Package Manager interact, you must follow these steps in the exact order shown:
+
 ### Installation Steps
 
-1. **Run pod install** (if you haven't already):
+1. **First, open your iOS project in Xcode**:
+   ```bash
+   cd example  # or your app directory
+   open ios/Runner.xcworkspace
+   ```
+
+   **Note**: If the `.xcworkspace` file doesn't exist yet, run `flutter pub get` first, then `cd ios && pod install`, then open it.
+
+2. **Add StarIO10 SDK via Swift Package Manager** (Do this BEFORE running pod install):
+   - In Xcode, select your **Runner** project in the navigator
+   - Select `File` > `Add Package Dependencies...` (or `Add Packages...` in older Xcode)
+   - In the search field at the top right, enter: `https://github.com/star-micronics/StarXpand-SDK-iOS`
+   - Select the latest version (recommended: 2.10.0 or later)
+   - In the "Add to Target" dropdown, ensure **Runner** is selected
+   - Click **Add Package**
+   - Wait for the package to download and integrate
+
+3. **Verify StarIO10 is added**:
+   - In Xcode's Project Navigator, you should see `StarIO10` under **Package Dependencies**
+   - Build your project (`Cmd + B`) to ensure StarIO10 is properly linked
+
+4. **Now run pod install** (if needed):
    ```bash
    cd ios
    pod install
    ```
 
-2. **Open your iOS project in Xcode**:
+   **If you see a "Unable to find a specification for StarIO10" error**: This is expected if you run `pod install` before adding StarIO10 via SPM. The podspec is configured to handle this, but it's better to add StarIO10 first as shown in step 2.
+
+5. **Final verification**:
+   - Build your project in Xcode (`Cmd + B`)
+   - If successful, you're ready to use the plugin!
+
+### Troubleshooting: "Unable to find a specification for StarIO10" Error
+
+If you encounter this error during `pod install`:
+
+```
+[!] Unable to find a specification for `StarIO10 (~> 1.0)` depended upon by `star_micronics_printer`
+```
+
+This happens because:
+- StarIO10 is not available via CocoaPods (it's only available via Swift Package Manager)
+- The plugin's Swift code depends on StarIO10
+
+**Solution**:
+1. **Clean your pod cache** (optional):
    ```bash
-   open ios/Runner.xcworkspace
+   cd ios
+   pod deintegrate
+   pod cache clean --all
    ```
 
-3. **Add StarIO10 SDK via Swift Package Manager**:
-   - In Xcode, select `File` > `Add Packages...`
-   - In the search field, enter: `https://github.com/star-micronics/StarXpand-SDK-iOS`
-   - Select the latest version (recommended: 2.10.0 or later)
-   - Ensure the package is added to your **Runner** target
-   - Click **Add Package**
+2. **Follow the installation steps above in order**, especially step 2 (add StarIO10 via SPM in Xcode FIRST)
 
-4. **Verify Installation**:
-   - In Xcode's Project Navigator, you should see `StarIO10` under **Package Dependencies**
-   - Build your project (`Cmd + B`) to ensure there are no errors
+3. **Alternative**: If you've already added StarIO10 via SPM but still see the error, the podspec is configured with weak framework linking to allow the build to continue. The plugin will work correctly at runtime as long as StarIO10 is added to your Xcode project via SPM.
+
+4. **For plugin developers**: The podspec includes weak framework linking for StarIO10, which allows pod installation to succeed even without StarIO10 in CocoaPods. The actual dependency is resolved via SPM at the Xcode project level.
 
 ## Required Info.plist Configurations
 

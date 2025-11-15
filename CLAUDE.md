@@ -391,18 +391,44 @@ cmd.containsKey("customCommand") -> {
 // May need to be added manually or via AAR/Maven
 ```
 
-### iOS Implementation Status: ⚠️ Stub Only
+### iOS Implementation Status: ✅ Fully Implemented
 
 **Current State:**
-- Only `getPlatformVersion` implemented
-- Requires full implementation using StarIO10 SDK for iOS
-- Structure in place: `ios/Classes/StarMicronicsPrinterPlugin.swift`
+- ✅ Full implementation completed using StarIO10 SDK
+- ✅ All printer operations implemented (search, status, print, commands, drawer)
+- ✅ Async/await pattern using Swift Task API
+- ⚠️ **IMPORTANT**: StarIO10 SDK must be added via Swift Package Manager (NOT CocoaPods)
 
-**TODO for iOS:**
-1. Add StarIO10 SDK via CocoaPods
-2. Implement method channel handlers
-3. Map command structures to iOS SDK
-4. Test on physical iOS devices with Star printers
+**Implementation Details:**
+- Location: `ios/Classes/StarMicronicsPrinterPlugin.swift`
+- SDK: StarIO10 (StarXpand SDK) via Swift Package Manager
+- iOS Version: 14.0+
+- Swift Version: 5.0+
+
+**Setup Requirements:**
+1. **Add StarIO10 via SPM in Xcode FIRST** (before running pod install)
+2. Open project in Xcode: `open ios/Runner.xcworkspace`
+3. File > Add Package Dependencies...
+4. URL: `https://github.com/star-micronics/StarXpand-SDK-iOS`
+5. Build in Xcode to verify
+6. Then run `pod install` if needed
+
+**Common Issue:**
+If you see `[!] Unable to find a specification for StarIO10` during `pod install`:
+- This is expected if StarIO10 hasn't been added via SPM yet
+- Solution: Follow the setup order above (SPM before CocoaPods)
+- The podspec uses weak framework linking to handle this
+- See `ios/SETUP_QUICKSTART.md` for quick troubleshooting
+
+**Implementation Features:**
+- ✅ Printer discovery (LAN, Bluetooth, BLE, USB)
+- ✅ Status monitoring
+- ✅ Text printing with styles
+- ✅ Barcode printing
+- ✅ QR code printing
+- ✅ Image printing
+- ✅ Paper control
+- ✅ Cash drawer control
 
 ### Windows Implementation Status: ⚠️ C API Stub
 
@@ -445,16 +471,32 @@ cmd.containsKey("customCommand") -> {
 
 ## Common Tasks for AI Assistants
 
-### 1. Adding iOS Support
+### 1. iOS Setup and Troubleshooting
 
-**Current Priority:** HIGH (iOS is not implemented)
+**Current Priority:** MEDIUM (iOS is implemented, focus on setup documentation)
 
-Steps:
-1. Add StarIO10 SDK to `ios/star_micronics_printer.podspec`
-2. Implement method handlers in `ios/Classes/StarMicronicsPrinterPlugin.swift`
-3. Mirror Android implementation structure
-4. Handle iOS-specific async patterns (callbacks or async/await)
-5. Test on physical devices
+**Status:** ✅ iOS implementation is complete
+
+Common setup issues and solutions:
+1. **CocoaPods Error** - "Unable to find a specification for StarIO10":
+   - This is the most common issue
+   - Solution: Add StarIO10 via SPM in Xcode BEFORE running `pod install`
+   - See `ios/SETUP_QUICKSTART.md` for quick fix
+   - The podspec uses weak framework linking to handle this
+
+2. **Build Errors** - "Module 'StarIO10' not found":
+   - StarIO10 not added to Xcode project
+   - Solution: File > Add Package Dependencies... in Xcode
+   - URL: https://github.com/star-micronics/StarXpand-SDK-iOS
+
+3. **Info.plist Configuration**:
+   - Required for Bluetooth/LAN printer access
+   - See `ios/README.md` for all required privacy keys
+
+**When helping with iOS:**
+- Always emphasize: Add StarIO10 via SPM FIRST, then pod install
+- Reference the quick start guide: `ios/SETUP_QUICKSTART.md`
+- Verify Info.plist has required permissions for the interface type being used
 
 ### 2. Completing Android Command Mapping
 
@@ -605,12 +647,15 @@ dev_dependencies:
 ```
 
 ### Android Dependencies
-- StarIO10 SDK (not explicitly in build.gradle - may require manual integration)
-- Kotlin Coroutines (implied, may need explicit declaration)
+- StarIO10 SDK (included via Maven: com.starmicronics:stario10:1.11.1)
+- Kotlin Coroutines (core and android)
 
-### iOS Dependencies (when implemented)
-- StarIO10 SDK via CocoaPods
+### iOS Dependencies
+- StarIO10 SDK via Swift Package Manager (NOT CocoaPods)
+  - Repository: https://github.com/star-micronics/StarXpand-SDK-iOS
+  - Version: 2.10.0+ recommended
 - Swift 5.0+
+- iOS 14.0+
 
 ---
 
