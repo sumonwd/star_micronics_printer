@@ -30,9 +30,21 @@ Minimum iOS version: 14.0
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386'
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
+    # Allow building without StarIO10 present (it will be added via SPM)
+    'OTHER_SWIFT_FLAGS' => '-Xcc -Wno-error=module-import-failed'
   }
   s.swift_version = '5.0'
+
+  # Mark StarIO10 as a weak framework dependency
+  # This allows the pod to be installed even though StarIO10 isn't available via CocoaPods
+  s.weak_frameworks = 'StarIO10'
+
+  # User-defined setting to suppress module not found warnings during pod install
+  s.user_target_xcconfig = {
+    'OTHER_SWIFT_FLAGS[config=Debug]' => '$(inherited)',
+    'OTHER_SWIFT_FLAGS[config=Release]' => '$(inherited)'
+  }
 
   # Note: StarIO10 SDK must be added via Swift Package Manager
   # The SDK does not support CocoaPods integration

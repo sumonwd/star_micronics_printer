@@ -47,15 +47,18 @@ No additional setup required. The StarIO10 SDK is included via Gradle.
 
 #### iOS
 
-The iOS implementation requires manual setup of the StarIO10 SDK via Swift Package Manager:
+⚠️ **IMPORTANT**: The iOS implementation requires manual setup of the StarIO10 SDK via Swift Package Manager. Follow these steps in order:
 
-1. Run `cd ios && pod install`
-2. Open `ios/Runner.xcworkspace` in Xcode
-3. Select `File` > `Add Packages...`
-4. Enter: `https://github.com/star-micronics/StarXpand-SDK-iOS`
-5. Add the package to your project
+1. Open `ios/Runner.xcworkspace` in Xcode (run `flutter pub get` first if needed)
+2. In Xcode: `File` > `Add Package Dependencies...`
+3. Enter: `https://github.com/star-micronics/StarXpand-SDK-iOS`
+4. Select the latest version and add to **Runner** target
+5. Build in Xcode to verify (`Cmd + B`)
+6. Then run `cd ios && pod install` if needed
 
-See the [iOS README](ios/README.md) for detailed setup instructions including required Info.plist configurations.
+**Note**: You may see a "Unable to find a specification for StarIO10" error if you run `pod install` before adding StarIO10 via SPM. This is expected - just add StarIO10 via SPM first as shown above.
+
+See the [iOS README](ios/README.md) for detailed setup instructions, troubleshooting, and required Info.plist configurations.
 
 #### Windows
 
