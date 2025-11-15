@@ -212,7 +212,7 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                 cmd.containsKey("appendCutPaper") -> {
                     val cutType = when(cmd["appendCutPaper"] as String) {
                         "fullCut" -> CutType.Full
-                        "partialCutWithFeed" -> CutType.PartialWithFeed
+                        "partialCutWithFeed" -> CutType.Partial
                         else -> CutType.Partial
                     }
                     builder.actionCut(cutType)
@@ -226,11 +226,9 @@ class StarMicronicsPrinterPlugin : FlutterPlugin, MethodCallHandler {
                     val data = cmd["appendBarcode"] as String
                     val symbology = parseBarcodeSymbology(cmd["symbology"] as? String)
                     val height = ((cmd["height"] as? Int) ?: 40).toDouble()
-                    val hri = cmd["hri"] as? Boolean ?: false
 
                     val parameter = BarcodeParameter(data, symbology)
                         .setHeight(height)
-                        .setPrintHRI(hri)
 
                     builder.actionPrintBarcode(parameter)
                 }
