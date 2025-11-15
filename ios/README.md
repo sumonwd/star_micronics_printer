@@ -10,31 +10,40 @@ This document provides setup instructions for using the Star Micronics Printer F
 
 ## StarIO10 SDK Installation
 
-The StarIO10 SDK (StarXpand SDK) is required for iOS support but **does not support CocoaPods**. You must add it manually via Swift Package Manager.
+The StarIO10 SDK (StarXpand SDK) is required for iOS support and is **automatically installed via CocoaPods**.
 
 ### Installation Steps
 
-1. **Run pod install** (if you haven't already):
+1. **Install dependencies** (from your Flutter project root):
    ```bash
+   flutter pub get
    cd ios
    pod install
    ```
 
-2. **Open your iOS project in Xcode**:
+   That's it! The StarIO10 SDK is automatically included as a dependency in the plugin's podspec file.
+
+2. **Open your iOS project in Xcode** (if needed):
    ```bash
    open ios/Runner.xcworkspace
    ```
 
-3. **Add StarIO10 SDK via Swift Package Manager**:
-   - In Xcode, select `File` > `Add Packages...`
-   - In the search field, enter: `https://github.com/star-micronics/StarXpand-SDK-iOS`
-   - Select the latest version (recommended: 2.10.0 or later)
-   - Ensure the package is added to your **Runner** target
-   - Click **Add Package**
+3. **Verify Installation**:
+   - Build your project in Xcode (`Cmd + B`) or via Flutter:
+     ```bash
+     flutter build ios
+     ```
+   - The StarIO10 pod should be automatically downloaded and linked
 
-4. **Verify Installation**:
-   - In Xcode's Project Navigator, you should see `StarIO10` under **Package Dependencies**
-   - Build your project (`Cmd + B`) to ensure there are no errors
+### Alternative: Swift Package Manager
+
+If you prefer to use Swift Package Manager instead of CocoaPods:
+
+1. Open your project in Xcode: `open ios/Runner.xcworkspace`
+2. Select `File` > `Add Packages...`
+3. Enter: `https://github.com/star-micronics/StarXpand-SDK-iOS`
+4. Select the latest version (recommended: 2.10.0 or later)
+5. Click **Add Package**
 
 ## Required Info.plist Configurations
 
@@ -113,9 +122,39 @@ The iOS Simulator has limitations when testing printer functionality:
 
 ## Troubleshooting
 
-### "Module 'StarIO10' not found" Error
+### "No such module 'StarIO10'" or "Module 'StarIO10' not found" Error
 
-**Solution**: You haven't added the StarIO10 SDK via Swift Package Manager. Follow the installation steps above.
+**Solutions**:
+
+1. **Run pod install**:
+   ```bash
+   cd ios
+   pod install
+   ```
+
+2. **Update CocoaPods repository** (if StarIO10 pod is not found):
+   ```bash
+   pod repo update
+   pod install
+   ```
+
+3. **Clean and rebuild**:
+   ```bash
+   flutter clean
+   flutter pub get
+   cd ios
+   rm -rf Pods Podfile.lock
+   pod install
+   cd ..
+   flutter build ios
+   ```
+
+4. **Verify podspec dependency**: Ensure `ios/star_micronics_printer.podspec` includes:
+   ```ruby
+   s.dependency 'StarIO10', '~> 1.0'
+   ```
+
+5. **Alternative - Use Swift Package Manager**: If CocoaPods continues to have issues, add StarIO10 manually via Xcode (see Alternative installation method above).
 
 ### "No printers found" during discovery
 
