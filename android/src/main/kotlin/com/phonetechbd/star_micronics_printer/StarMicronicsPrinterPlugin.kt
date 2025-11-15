@@ -5,8 +5,8 @@ import android.graphics.BitmapFactory
 import androidx.annotation.NonNull
 import com.starmicronics.stario10.*
 import com.starmicronics.stario10.starxpandcommand.*
-import com.starmicronics.stario10.starxpandcommand.Printer
-import com.starmicronics.stario10.starxpandcommand.Drawer
+import com.starmicronics.stario10.starxpandcommand.printer.Printer
+import com.starmicronics.stario10.starxpandcommand.drawer.Drawer
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
