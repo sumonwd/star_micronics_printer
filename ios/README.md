@@ -12,6 +12,10 @@ This document provides setup instructions for using the Star Micronics Printer F
 
 The StarIO10 SDK (StarXpand SDK) is required for iOS support and is **automatically installed via CocoaPods**.
 
+### ⚠️ Important: Installation Order
+
+Due to the way CocoaPods and Swift Package Manager interact, you must follow these steps in the exact order shown:
+
 ### Installation Steps
 
 1. **Install dependencies** (from your Flutter project root):
@@ -25,7 +29,9 @@ The StarIO10 SDK (StarXpand SDK) is required for iOS support and is **automatica
 
 2. **Open your iOS project in Xcode** (if needed):
    ```bash
-   open ios/Runner.xcworkspace
+   cd ios
+   pod deintegrate
+   pod cache clean --all
    ```
 
 3. **Verify Installation**:
