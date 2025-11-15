@@ -9,14 +9,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 A Flutter plugin for integrating Star Micronics printers with Flutter applications.
 Provides comprehensive printing functionality including receipt printing, barcode/QR code generation, and cash drawer control.
-
-IMPORTANT: This plugin requires the StarIO10 SDK (StarXpand SDK) to be added manually via Swift Package Manager.
-After running pod install, you must:
-1. Open the iOS project in Xcode (ios/Runner.xcworkspace)
-2. Select File > Add Packages...
-3. Enter: https://github.com/star-micronics/StarXpand-SDK-iOS
-4. Select the latest version and add to your project
-
+Supports Star Micronics printers via LAN, Bluetooth, Bluetooth LE, and USB interfaces.
 Minimum iOS version: 14.0
                        DESC
   s.homepage         = 'https://github.com/phonetechbd/star_micronics_printer'
@@ -25,6 +18,7 @@ Minimum iOS version: 14.0
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
+  s.dependency 'StarIO10', '~> 1.0'
   s.platform = :ios, '14.0'
 
   # Flutter.framework does not contain a i386 slice.
@@ -35,18 +29,4 @@ Minimum iOS version: 14.0
     'OTHER_SWIFT_FLAGS' => '-Xcc -Wno-error=module-import-failed'
   }
   s.swift_version = '5.0'
-
-  # Mark StarIO10 as a weak framework dependency
-  # This allows the pod to be installed even though StarIO10 isn't available via CocoaPods
-  s.weak_frameworks = 'StarIO10'
-
-  # User-defined setting to suppress module not found warnings during pod install
-  s.user_target_xcconfig = {
-    'OTHER_SWIFT_FLAGS[config=Debug]' => '$(inherited)',
-    'OTHER_SWIFT_FLAGS[config=Release]' => '$(inherited)'
-  }
-
-  # Note: StarIO10 SDK must be added via Swift Package Manager
-  # The SDK does not support CocoaPods integration
-  # See installation instructions in the description above
 end
